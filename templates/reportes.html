@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-chart-bar" style="color: var(--primary-color);"></i> Reportes y Estadísticas</h2>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card" style="border-left: 4px solid var(--primary-color);">
+        <div class="card-icon blue"><i class="fas fa-piggy-bank"></i></div>
+        <div class="card-content">
+            <h3>Total Histórico Recaudado</h3>
+            <p>${{ total_recaudado }}</p>
+        </div>
+    </div>
+    <div class="card" style="border-left: 4px solid var(--success-color);">
+        <div class="card-icon green"><i class="fas fa-car-side"></i></div>
+        <div class="card-content">
+            <h3>Total Autos Atendidos</h3>
+            <p>{{ autos_atendidos }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-sections">
+    <div class="left-col" style="grid-column: 1 / -1;">
+        <div class="section-card">
+            <h3><i class="fas fa-star" style="color: #fbbf24; margin-right: 10px;"></i> Servicios Más Utilizados</h3>
+            <div class="table-container" style="padding: 0; border: none; box-shadow: none;">
+                {% if servicios_top %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Cantidad de veces realizado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in servicios_top %}
+                        <tr>
+                            <td><strong>{{ s.nombre }}</strong></td>
+                            <td>
+                                <span style="background: var(--primary-color); color: white; padding: 2px 10px; border-radius: 12px; font-weight: bold; font-size: 0.9rem;">
+                                    {{ s.cantidad }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: var(--text-muted); padding: 20px;">No hay datos suficientes para generar este reporte.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

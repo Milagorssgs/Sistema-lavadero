@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva Online - AutoLimpio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { background: #f4f6f9; display: block; }
+        .reserva-container { max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .reserva-container h1 { text-align: center; color: var(--primary-color); }
+        .section-title { border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-top: 30px; margin-bottom: 20px; color: var(--dark-color); }
+    </style>
+</head>
+<body>
+    <div class="reserva-container">
+        <h1>Reserva de Turno Online</h1>
+        <p style="text-align: center;">Complete el siguiente formulario para agendar su lavado.</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <h3 class="section-title">1. Datos Personales</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label for="cliente_nombre">Nombre *</label>
+                    <input type="text" id="cliente_nombre" name="cliente_nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="cliente_apellido">Apellido *</label>
+                    <input type="text" id="cliente_apellido" name="cliente_apellido" required>
+                </div>
+                <div class="form-group">
+                    <label for="cliente_telefono">Teléfono * (Para confirmar)</label>
+                    <input type="text" id="cliente_telefono" name="cliente_telefono" required>
+                </div>
+            </div>
+
+            <h3 class="section-title">2. Datos del Vehículo</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label for="vehiculo_marca">Marca *</label>
+                    <input type="text" id="vehiculo_marca" name="vehiculo_marca" required>
+                </div>
+                <div class="form-group">
+                    <label for="vehiculo_modelo">Modelo *</label>
+                    <input type="text" id="vehiculo_modelo" name="vehiculo_modelo" required>
+                </div>
+                <div class="form-group">
+                    <label for="vehiculo_patente">Patente *</label>
+                    <input type="text" id="vehiculo_patente" name="vehiculo_patente" required style="text-transform: uppercase;">
+                </div>
+            </div>
+
+            <h3 class="section-title">3. Servicio y Horario</h3>
+            <div class="form-group">
+                <label for="servicio_id">Servicio Deseado *</label>
+                <select id="servicio_id" name="servicio_id" required>
+                    <option value="">Seleccione un servicio...</option>
+                    {% for s in servicios %}
+                    <option value="{{ s.id }}">{{ s.nombre }} - ${{ s.precio }} (Aprox. {{ s.duracion }} min)</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label for="fecha">Fecha *</label>
+                    <input type="date" id="fecha" name="fecha" required min="{{ datetime_today }}">
+                </div>
+                <div class="form-group">
+                    <label for="hora">Hora * (8:00 a 18:00)</label>
+                    <input type="time" id="hora" name="hora" required min="08:00" max="18:00">
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button type="submit" class="btn btn-primary" style="padding: 15px 30px; font-size: 1.2rem;">Confirmar Reserva</button>
+            </div>
+        </form>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('login') }}">Acceso Administrativo</a>
+        </div>
+    </div>
+    
+    <script>
+        // Establecer fecha mínima como hoy
+        document.getElementById('fecha').min = new Date().toISOString().split("T")[0];
+    </script>
+</body>
+</html>

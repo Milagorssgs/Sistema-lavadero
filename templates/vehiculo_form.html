@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Registrar Vehículo</h2>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="cliente_id">Cliente (Dueño) *</label>
+            <select id="cliente_id" name="cliente_id" required>
+                <option value="">Seleccione un cliente...</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}" {% if request.args.get('cliente_id') == c.id|string %}selected{% endif %}>
+                    {{ c.nombre }} {{ c.apellido }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="marca">Marca *</label>
+            <input type="text" id="marca" name="marca" required>
+        </div>
+        <div class="form-group">
+            <label for="modelo">Modelo *</label>
+            <input type="text" id="modelo" name="modelo" required>
+        </div>
+        <div class="form-group">
+            <label for="patente">Patente *</label>
+            <input type="text" id="patente" name="patente" required style="text-transform: uppercase;">
+        </div>
+        <div class="form-group">
+            <label for="tipo">Tipo de Vehículo *</label>
+            <select id="tipo" name="tipo" required>
+                <option value="Auto">Auto</option>
+                <option value="Camioneta">Camioneta</option>
+                <option value="SUV">SUV</option>
+                <option value="Moto">Moto</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{{ url_for('vehiculos') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Registrar Pago para Turno #{{ turno.id }}</h2>
+
+<div class="form-container">
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+        <p><strong>Cliente:</strong> {{ turno.nombre }} {{ turno.apellido }}</p>
+        <p><strong>Vehículo:</strong> {{ turno.patente }}</p>
+        <p><strong>Servicio:</strong> {{ turno.servicio_nombre }}</p>
+        <p><strong>Monto Total a Pagar:</strong> <span style="font-size: 1.2rem; font-weight: bold; color: var(--success-color);">${{ turno.precio }}</span></p>
+    </div>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="monto_abonado">Monto Abonado *</label>
+            <input type="number" step="0.01" id="monto_abonado" name="monto_abonado" value="{{ turno.precio }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="metodo_pago">Método de Pago *</label>
+            <select id="metodo_pago" name="metodo_pago" required>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Mixto">Mixto</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Confirmar Pago</button>
+        <a href="{{ url_for('turnos') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

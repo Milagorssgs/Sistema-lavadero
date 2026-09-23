@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presupuesto #{{ presupuesto.id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #eee; }
+        .receipt { max-width: 800px; margin: 0 auto; background: #fff; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+        .header-left h1 { margin: 0 0 5px 0; color: #007bff; }
+        .header-right { text-align: right; }
+        .info-section { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 5px; width: 45%; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; }
+        .total-box { text-align: right; font-size: 1.5rem; font-weight: bold; }
+        .btn-print { display: block; width: 100%; padding: 15px; background: #28a745; color: white; border: none; font-size: 1.1rem; cursor: pointer; margin-top: 20px; border-radius: 5px; }
+        .btn-back { display: block; width: 100%; padding: 15px; background: #6c757d; color: white; border: none; font-size: 1.1rem; cursor: pointer; margin-top: 10px; border-radius: 5px; text-align: center; text-decoration: none; box-sizing: border-box; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .receipt { box-shadow: none; max-width: 100%; padding: 0; }
+            .btn-print, .btn-back { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            <div class="header-left">
+                <h1>{{ config.get('nombre_lavadero', 'AutoLimpio') }}</h1>
+                <p>Presupuesto / Orden de Trabajo</p>
+            </div>
+            <div class="header-right">
+                <h2>Nº {{ presupuesto.id }}</h2>
+                <p>Fecha: {{ presupuesto.fecha[:10] }}</p>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-box">
+                <h3>Datos del Cliente</h3>
+                <p><strong>Nombre:</strong> {{ presupuesto.nombre }} {{ presupuesto.apellido }}</p>
+                <p><strong>Teléfono:</strong> {{ presupuesto.telefono }}</p>
+                <p><strong>Email:</strong> {{ presupuesto.email or 'N/A' }}</p>
+            </div>
+            <div class="info-box">
+                <h3>Datos del Vehículo</h3>
+                <p><strong>Marca/Modelo:</strong> {{ presupuesto.marca }} {{ presupuesto.modelo }}</p>
+                <p><strong>Patente:</strong> <span style="font-size: 1.2rem; font-weight: bold;">{{ presupuesto.patente }}</span></p>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Servicio</th>
+                    <th style="text-align: right;">Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in detalles %}
+                <tr>
+                    <td>{{ d.servicio_nombre }}</td>
+                    <td style="text-align: right;">${{ d.precio }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="total-box">
+            Total Estimado: ${{ presupuesto.total }}
+        </div>
+        
+        <button class="btn-print" onclick="window.print()">Imprimir / Guardar como PDF</button>
+        <a href="{{ url_for('presupuestos') }}" class="btn-back">Volver al sistema</a>
+    </div>
+</body>
+</html>

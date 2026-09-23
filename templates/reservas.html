@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-globe" style="color: var(--primary-color);"></i> Reservas Online (Públicas)</h2>
+</div>
+<p>Estas reservas fueron creadas por los clientes desde la página web. Deberían ser contactados o confirmados administrativamente.</p>
+
+<div class="table-container" style="margin-top: 20px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Cliente</th>
+                <th>Vehículo</th>
+                <th>Servicio</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reservas %}
+            <tr>
+                <td>{{ r.fecha }} <strong>{{ r.hora }}</strong></td>
+                <td>{{ r.cliente_nombre }} {{ r.cliente_apellido }}<br><small>{{ r.cliente_telefono }}</small></td>
+                <td>{{ r.vehiculo_marca }} {{ r.vehiculo_modelo }}<br><strong>{{ r.vehiculo_patente }}</strong></td>
+                <td>{{ r.servicio }}</td>
+                <td>{{ r.estado }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center;">No hay reservas online.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

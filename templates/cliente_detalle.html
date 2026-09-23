@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Detalle del Cliente: {{ cliente.nombre }} {{ cliente.apellido }}</h2>
+    <a href="{{ url_for('clientes') }}" class="btn btn-secondary">Volver</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+    <!-- Datos Personales -->
+    <div class="table-container">
+        <h3>Datos Personales</h3>
+        <p><strong>Teléfono:</strong> {{ cliente.telefono }}</p>
+        <p><strong>Email:</strong> {{ cliente.email or 'N/A' }}</p>
+        <p><strong>Dirección:</strong> {{ cliente.direccion or 'N/A' }}</p>
+        <p><strong>Fecha de registro:</strong> {{ cliente.fecha_registro[:10] }}</p>
+    </div>
+
+    <!-- Vehículos -->
+    <div class="table-container">
+        <div style="display: flex; justify-content: space-between;">
+            <h3>Vehículos</h3>
+            <a href="{{ url_for('vehiculo_nuevo') }}?cliente_id={{ cliente.id }}" class="btn btn-primary" style="font-size: 0.8rem; padding: 4px 8px; height: max-content;">+ Agregar</a>
+        </div>
+        {% if vehiculos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Marca/Modelo</th>
+                    <th>Patente</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in vehiculos %}
+                <tr>
+                    <td>{{ v.marca }} {{ v.modelo }}</td>
+                    <td><strong>{{ v.patente }}</strong></td>
+                    <td>{{ v.tipo }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No tiene vehículos registrados.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Historial de turnos -->
+<div class="table-container" style="margin-top: 20px;">
+    <h3>Historial de Turnos</h3>
+    {% if turnos %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Patente</th>
+                <th>Servicio</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in turnos %}
+            <tr>
+                <td>{{ t.fecha }}</td>
+                <td>{{ t.hora }}</td>
+                <td>{{ t.patente }}</td>
+                <td>{{ t.servicio }}</td>
+                <td>{{ t.estado }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No tiene turnos registrados.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

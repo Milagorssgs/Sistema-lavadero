@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-cog" style="color: var(--primary-color);"></i> Configuración del Sistema</h2>
+</div>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="nombre_lavadero">Nombre del Lavadero *</label>
+            <input type="text" id="nombre_lavadero" name="nombre_lavadero" value="{{ config.get('nombre_lavadero', 'Lavadero AutoLimpio') }}" required>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label for="horario_apertura">Horario Apertura</label>
+                <input type="time" id="horario_apertura" name="horario_apertura" value="{{ config.get('horario_apertura', '08:00') }}">
+            </div>
+            <div class="form-group">
+                <label for="horario_cierre">Horario Cierre</label>
+                <input type="time" id="horario_cierre" name="horario_cierre" value="{{ config.get('horario_cierre', '18:00') }}">
+            </div>
+        </div>
+        
+        <p style="font-size: 0.9rem; color: #666;">Las configuraciones de precios y duración se manejan desde la pestaña "Servicios".</p>
+        
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+</div>
+{% endblock %}

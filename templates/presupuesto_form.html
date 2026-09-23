@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Nuevo Presupuesto / Orden de Trabajo</h2>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="cliente_id">Cliente *</label>
+            <select id="cliente_id" name="cliente_id" required onchange="filtrarVehiculos()">
+                <option value="">Seleccione un cliente...</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}">{{ c.nombre }} {{ c.apellido }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="vehiculo_id">Vehículo *</label>
+            <select id="vehiculo_id" name="vehiculo_id" required>
+                <option value="">Seleccione primero un cliente...</option>
+                {% for v in vehiculos %}
+                <option value="{{ v.id }}" data-cliente="{{ v.cliente_id }}" style="display:none;">
+                    {{ v.marca }} {{ v.modelo }} - {{ v.patente }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Seleccionar Servicios *</label>
+            <div style="background: #f8f9fa; padding: 15px; border: 1px solid #ced4da; border-radius: 4px; max-height: 200px; overflow-y: auto;">
+                {% for s in servicios %}
+                <div style="margin-bottom: 8px;">
+                    <label style="font-weight: normal; display: flex; align-items: center;">
+                        <input type="checkbox" name="servicios" value="{{ s.id }}" style="width: auto; margin-right: 10px;">
+                        {{ s.nombre }} - ${{ s.precio }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Generar Presupuesto</button>
+        <a href="{{ url_for('presupuestos') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+<script>
+function filtrarVehiculos() {
+    const clienteId = document.getElementById('cliente_id').value;
+    const vehiculoSelect = document.getElementById('vehiculo_id');
+    const options = vehiculoSelect.options;
+    
+    let vehiculosEncontrados = 0;
+    
+    for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        if (option.value === "") {
+            option.text = clienteId ? "Seleccione un vehículo..." : "Seleccione primero un cliente...";
+            option.style.display = "block";
+            option.selected = true;
+        } else {
+            if (option.getAttribute('data-cliente') === clienteId) {
+                option.style.display = "block";
+                vehiculosEncontrados++;
+            } else {
+                option.style.display = "none";
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

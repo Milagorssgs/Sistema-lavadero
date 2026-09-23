@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-car" style="color: var(--primary-color);"></i> Gestión de Vehículos</h2>
+    <a href="{{ url_for('vehiculo_nuevo') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Registrar Vehículo
+    </a>
+</div>
+
+<div class="table-container">
+    <form method="GET" class="search-form">
+        <input type="text" name="buscar" value="{{ buscar }}" placeholder="Buscar por patente o dueño..." class="search-input">
+        <button type="submit" class="btn btn-secondary"><i class="fas fa-search"></i> Buscar</button>
+        {% if buscar %}
+        <a href="{{ url_for('vehiculos') }}" class="btn btn-outline-danger"><i class="fas fa-times"></i> Limpiar</a>
+        {% endif %}
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente (Dueño)</th>
+                <th>Marca / Modelo</th>
+                <th>Patente</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vehiculos %}
+            <tr>
+                <td>#{{ v.id }}</td>
+                <td>
+                    <div style="font-weight: 500;">{{ v.nombre }} {{ v.apellido }}</div>
+                </td>
+                <td>{{ v.marca }} <span style="color: var(--text-muted);">{{ v.modelo }}</span></td>
+                <td><span style="background: #e2e8f0; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-weight: bold; letter-spacing: 1px;">{{ v.patente }}</span></td>
+                <td>{{ v.tipo }}</td>
+                <td>
+                    <a href="{{ url_for('cliente_detalle', id=v.cliente_id) }}" class="btn btn-info btn-icon" title="Ver Dueño">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="{{ url_for('vehiculo_eliminar', id=v.id) }}" class="btn btn-danger btn-icon" title="Eliminar" onclick="return confirm('¿Está seguro de que desea eliminar este vehículo de la base de datos?\nPatente: {{ v.patente }}');">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                    <i class="fas fa-car-crash" style="font-size: 3rem; margin-bottom: 15px; display: block; color: #cbd5e1;"></i>
+                    No se encontraron vehículos registrados.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

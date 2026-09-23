@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-user-shield" style="color: var(--primary-color);"></i> Usuarios del Sistema</h2>
+</div>
+
+<div class="table-container" style="margin-top: 20px;">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td><strong>{{ u.username }}</strong></td>
+                <td><span style="text-transform: capitalize;">{{ u.rol }}</span></td>
+                <td>{{ 'Activo' if u.activo == 1 else 'Inactivo' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">* La creación y edición de usuarios se realiza mediante base de datos o consola para mayor seguridad en esta versión.</p>
+</div>
+{% endblock %}

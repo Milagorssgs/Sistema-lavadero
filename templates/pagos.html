@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-hand-holding-usd" style="color: var(--primary-color);"></i> Historial de Pagos</h2>
+</div>
+
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>ID Pago</th>
+                <th>Turno</th>
+                <th>Cliente</th>
+                <th>Total / Abonado / Saldo</th>
+                <th>Método</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pagos %}
+            <tr>
+                <td><strong>#{{ p.id }}</strong></td>
+                <td>
+                    <div><i class="far fa-calendar-alt" style="color: var(--text-muted);"></i> {{ p.turno_fecha }}</div>
+                    <small><i class="far fa-clock" style="color: var(--text-muted);"></i> {{ p.turno_hora }}</small>
+                </td>
+                <td>
+                    <div style="font-weight: 500;">{{ p.nombre }} {{ p.apellido }}</div>
+                </td>
+                <td>
+                    <div>Total: <span style="font-weight: 600;">${{ p.monto_total }}</span></div>
+                    <div>Abonado: <span style="color: var(--success-color); font-weight: 600;">${{ p.monto_abonado }}</span></div>
+                    {% if p.saldo_pendiente > 0 %}
+                    <div>Saldo: <span style="color: var(--danger-color); font-weight: 600;">${{ p.saldo_pendiente }}</span></div>
+                    {% endif %}
+                </td>
+                <td>
+                    <span style="background: #e2e8f0; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 500;">
+                        {% if p.metodo_pago == 'Efectivo' %}<i class="fas fa-money-bill-wave text-success"></i>
+                        {% elif p.metodo_pago == 'Transferencia' %}<i class="fas fa-mobile-alt text-info"></i>
+                        {% elif p.metodo_pago == 'Tarjeta' %}<i class="far fa-credit-card text-primary"></i>
+                        {% else %}<i class="fas fa-wallet text-secondary"></i>{% endif %}
+                        {{ p.metodo_pago }}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-badge {% if p.estado == 'Pagado' %}status-finalizado{% else %}status-pendiente{% endif %}">
+                        {{ p.estado }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ url_for('comprobante', pago_id=p.id) }}" class="btn btn-info btn-sm" target="_blank" title="Ver Comprobante">
+                        <i class="fas fa-file-invoice"></i> Ver
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                    <i class="fas fa-receipt" style="font-size: 3rem; margin-bottom: 15px; display: block; color: #cbd5e1;"></i>
+                    No hay pagos registrados en el sistema.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

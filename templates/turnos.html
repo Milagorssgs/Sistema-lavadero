@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="far fa-calendar-alt" style="color: var(--primary-color);"></i> Agenda de Turnos</h2>
+    <a href="{{ url_for('turno_nuevo') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nuevo Turno
+    </a>
+</div>
+
+<div class="table-container">
+    <form method="GET" class="search-form" style="align-items: center;">
+        <label for="fecha" style="font-weight: 600; color: var(--text-muted); margin-bottom: 0;">Fecha:</label>
+        <input type="date" id="fecha" name="fecha" value="{{ fecha_filtro }}" class="search-input" style="max-width: 200px;">
+        <button type="submit" class="btn btn-secondary"><i class="fas fa-filter"></i> Ver Turnos</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Cliente</th>
+                <th>Vehículo</th>
+                <th>Servicio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in turnos %}
+            <tr>
+                <td><strong><i class="far fa-clock" style="color: var(--text-muted);"></i> {{ t.hora }}</strong></td>
+                <td>
+                    <div style="font-weight: 500;">{{ t.nombre }} {{ t.apellido }}</div>
+                    <small style="color: var(--text-muted);"><i class="fas fa-phone"></i> {{ t.telefono }}</small>
+                </td>
+                <td>
+                    <div>{{ t.marca }} {{ t.modelo }}</div>
+                    <span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.8rem; font-weight: bold;">{{ t.patente }}</span>
+                </td>
+                <td>
+                    <div>{{ t.servicio }}</div>
+                    <small style="color: var(--success-color); font-weight: 600;">${{ t.precio }}</small>
+                </td>
+                <td>
+                    <span class="status-badge {% if t.estado == 'Pendiente' %}status-pendiente{% elif t.estado == 'En proceso' %}status-proceso{% elif t.estado == 'Finalizado' %}status-finalizado{% else %}status-cancelado{% endif %}">
+                        {{ t.estado }}
+                    </span>
+                </td>
+                <td>
+                    {% if t.estado == 'Pendiente' %}
+                    <a href="{{ url_for('turno_cambiar_estado', id=t.id, estado='En proceso') }}" class="btn btn-info btn-sm" title="Iniciar Trabajo"><i class="fas fa-play"></i> Iniciar</a>
+                    {% endif %}
+                    {% if t.estado == 'En proceso' %}
+                    <a href="{{ url_for('pago_nuevo', turno_id=t.id) }}" class="btn btn-success btn-sm" title="Finalizar y Cobrar"><i class="fas fa-check"></i> Finalizar/Cobrar</a>
+                    {% endif %}
+                    {% if t.estado != 'Cancelado' and t.estado != 'Finalizado' %}
+                    <a href="{{ url_for('turno_cambiar_estado', id=t.id, estado='Cancelado') }}" class="btn btn-outline-danger btn-sm" style="margin-left: 5px;" onclick="return confirm('¿Cancelar turno definitivamente?');"><i class="fas fa-times"></i></a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                    <i class="far fa-calendar-times" style="font-size: 3rem; margin-bottom: 15px; display: block; color: #cbd5e1;"></i>
+                    No hay turnos registrados para esta fecha.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

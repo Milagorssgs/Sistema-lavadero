@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprobante de Pago #{{ pago.id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #eee; }
+        .receipt { max-width: 600px; margin: 0 auto; background: #fff; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
+        .header h1 { margin: 0 0 10px 0; }
+        .details p { margin: 5px 0; }
+        .amount-box { background: #f8f9fa; padding: 15px; text-align: right; margin-top: 20px; border: 1px solid #ddd; }
+        .amount-box h2 { margin: 0; }
+        .btn-print { display: block; width: 100%; padding: 15px; background: #007bff; color: white; border: none; font-size: 1.1rem; cursor: pointer; margin-top: 20px; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .receipt { box-shadow: none; max-width: 100%; padding: 0; }
+            .btn-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            <h1>{{ config.get('nombre_lavadero', 'AutoLimpio') }}</h1>
+            <p>Comprobante de Pago Electrónico</p>
+        </div>
+        
+        <div class="details">
+            <p><strong>Nº Comprobante:</strong> #{{ pago.id }}</p>
+            <p><strong>Fecha de Emisión:</strong> {{ pago.fecha[:10] }}</p>
+            <p><strong>Cliente:</strong> {{ pago.nombre }} {{ pago.apellido }}</p>
+            <p><strong>Vehículo / Patente:</strong> {{ pago.patente }}</p>
+            <p><strong>Servicio Realizado:</strong> {{ pago.servicio_nombre }} (Turno: {{ pago.turno_fecha }} {{ pago.turno_hora }})</p>
+            <p><strong>Método de Pago:</strong> {{ pago.metodo_pago }}</p>
+            <p><strong>Estado:</strong> {{ pago.estado }}</p>
+        </div>
+        
+        <div class="amount-box">
+            <p>Monto Total: ${{ pago.monto_total }}</p>
+            <p>Monto Abonado: ${{ pago.monto_abonado }}</p>
+            <p>Saldo Pendiente: ${{ pago.saldo_pendiente }}</p>
+            <hr>
+            <h2>Total Abonado: ${{ pago.monto_abonado }}</h2>
+        </div>
+        
+        <button class="btn-print" onclick="window.print()">Imprimir / Guardar como PDF</button>
+    </div>
+</body>
+</html>

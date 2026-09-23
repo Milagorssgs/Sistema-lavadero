@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-file-invoice" style="color: var(--primary-color);"></i> Presupuestos Generados</h2>
+    <a href="{{ url_for('presupuesto_nuevo') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Nuevo Presupuesto</a>
+</div>
+
+<div class="table-container" style="margin-top: 20px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Nº Presupuesto</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Vehículo</th>
+                <th>Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in presupuestos %}
+            <tr>
+                <td>#{{ p.id }}</td>
+                <td>{{ p.fecha[:10] }}</td>
+                <td>{{ p.nombre }} {{ p.apellido }}</td>
+                <td>{{ p.patente }}</td>
+                <td><strong>${{ p.total }}</strong></td>
+                <td>
+                    <a href="{{ url_for('presupuesto_ver', id=p.id) }}" class="btn btn-info" style="font-size: 0.8rem;">Ver / Imprimir</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center;">No hay presupuestos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

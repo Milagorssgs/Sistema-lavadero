@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Nuevo Turno</h2>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="cliente_id">Cliente *</label>
+            <select id="cliente_id" name="cliente_id" required onchange="filtrarVehiculos()">
+                <option value="">Seleccione un cliente...</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}">{{ c.nombre }} {{ c.apellido }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="vehiculo_id">Vehículo *</label>
+            <select id="vehiculo_id" name="vehiculo_id" required>
+                <option value="">Seleccione primero un cliente...</option>
+                {% for v in vehiculos %}
+                <option value="{{ v.id }}" data-cliente="{{ v.cliente_id }}" style="display:none;">
+                    {{ v.marca }} {{ v.modelo }} - {{ v.patente }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="servicio_id">Servicio *</label>
+            <select id="servicio_id" name="servicio_id" required>
+                <option value="">Seleccione un servicio...</option>
+                {% for s in servicios %}
+                <option value="{{ s.id }}">{{ s.nombre }} ({{ s.duracion }} min)</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group" style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+                <label for="fecha">Fecha *</label>
+                <input type="date" id="fecha" name="fecha" required>
+            </div>
+            <div style="flex: 1;">
+                <label for="hora">Hora *</label>
+                <input type="time" id="hora" name="hora" required>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="observaciones">Observaciones</label>
+            <textarea id="observaciones" name="observaciones" rows="3"></textarea>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Guardar Turno</button>
+        <a href="{{ url_for('turnos') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+<script>
+function filtrarVehiculos() {
+    const clienteId = document.getElementById('cliente_id').value;
+    const vehiculoSelect = document.getElementById('vehiculo_id');
+    const options = vehiculoSelect.options;
+    
+    let vehiculosEncontrados = 0;
+    
+    for (let i = 0; i < options.length; i++) {
+        const option = options[i];
+        if (option.value === "") {
+            option.text = clienteId ? "Seleccione un vehículo..." : "Seleccione primero un cliente...";
+            option.style.display = "block";
+            option.selected = true;
+        } else {
+            if (option.getAttribute('data-cliente') === clienteId) {
+                option.style.display = "block";
+                vehiculosEncontrados++;
+            } else {
+                option.style.display = "none";
+            }
+        }
+    }
+    
+    if (clienteId && vehiculosEncontrados === 0) {
+        options[0].text = "El cliente no tiene vehículos registrados";
+    }
+}
+</script>
+{% endblock %}
