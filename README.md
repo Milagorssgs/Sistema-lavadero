@@ -1,4 +1,4 @@
-# 🚗 Sistema de Gestión para Lavadero de Autos
+#  Sistema de Gestión para Lavadero de Autos
 
 Una aplicación web pensada para que un lavadero deje atrás el cuaderno de turnos, los recibos en papel y las anotaciones sueltas, y pase a tener toda su operación diaria en un solo lugar.
 
@@ -6,7 +6,7 @@ Este proyecto nació como **Práctica Profesional (Ciclo Lectivo 2026)** en el *
 
 ---
 
-## ✨ ¿Qué resuelve?
+##  ¿Qué resuelve?
 
 | Antes | Con el sistema |
 | :--- | :--- |
@@ -19,7 +19,7 @@ Este proyecto nació como **Práctica Profesional (Ciclo Lectivo 2026)** en el *
 
 ---
 
-## 🧩 Funcionalidades
+##  Funcionalidades
 
 - **Inicio de sesión con roles**: administrador, empleado y dueño. Las contraseñas se guardan cifradas (hash), nunca en texto plano.
 - **Dashboard**: turnos del día, autos atendidos, ingresos, pagos pendientes, próximos turnos, últimas reservas y gráfico de ingresos de los últimos 7 días.
@@ -36,7 +36,7 @@ Este proyecto nació como **Práctica Profesional (Ciclo Lectivo 2026)** en el *
 
 ---
 
-## 🛠️ Tecnologías
+##  Tecnologías
 
 | Capa | Herramienta |
 | :--- | :--- |
@@ -51,7 +51,7 @@ Este proyecto nació como **Práctica Profesional (Ciclo Lectivo 2026)** en el *
 
 ---
 
-## 📁 Estructura del proyecto
+##  Estructura del proyecto
 
 ```text
 Sistema-lavadero/
@@ -68,7 +68,7 @@ Sistema-lavadero/
 
 ---
 
-## 🚀 Cómo ejecutarlo
+##  Cómo ejecutarlo
 
 **Requisitos:** Python 3.10 o superior.
 
@@ -99,7 +99,7 @@ La reserva online para clientes está en **http://127.0.0.1:5000/reserva_online*
 
 ---
 
-## 🔑 Usuarios de prueba
+##  Usuarios de prueba
 
 | Rol | Usuario | Contraseña | Acceso |
 | :--- | :--- | :--- | :--- |
@@ -112,7 +112,7 @@ La reserva online para clientes está en **http://127.0.0.1:5000/reserva_online*
 
 ---
 
-## 🗄️ Modelo de datos
+##  Modelo de datos
 
 La base está normalizada y usa claves foráneas entre sus tablas principales:
 
@@ -129,7 +129,7 @@ Para consultas frecuentes (patentes, turnos por fecha y estado, pagos, reservas)
 
 ---
 
-## 🔭 Próximos pasos
+##  Próximos pasos
 
 Algunas mejoras que quedaron planificadas para futuras versiones:
 
@@ -139,7 +139,7 @@ Algunas mejoras que quedaron planificadas para futuras versiones:
 
 ---
 
-## 👩‍💻 Autora
+##  Autora
 
 **Milagros Yaquelin Gsell**
 Práctica Profesional — IPET 1308 — Ciclo Lectivo 2026
