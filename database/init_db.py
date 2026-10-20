@@ -114,9 +114,25 @@ def init_db():
         metodo_pago TEXT NOT NULL,
         estado TEXT NOT NULL,
         fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        subtotal REAL DEFAULT 0,
+        tipo_ajuste TEXT,
+        porcentaje_ajuste REAL DEFAULT 0,
+        monto_ajuste REAL DEFAULT 0,
         FOREIGN KEY (turno_id) REFERENCES turnos(id)
     )
     ''')
+
+    # Migración: agregar columnas de ajustes a bases creadas con versiones anteriores
+    columnas_pagos = [fila[1] for fila in cursor.execute('PRAGMA table_info(pagos)')]
+    nuevas_columnas = {
+        'subtotal': 'REAL DEFAULT 0',
+        'tipo_ajuste': 'TEXT',
+        'porcentaje_ajuste': 'REAL DEFAULT 0',
+        'monto_ajuste': 'REAL DEFAULT 0',
+    }
+    for nombre, definicion in nuevas_columnas.items():
+        if nombre not in columnas_pagos:
+            cursor.execute(f'ALTER TABLE pagos ADD COLUMN {nombre} {definicion}')
 
     # Tabla Presupuestos
     cursor.execute('''
