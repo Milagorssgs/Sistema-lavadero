@@ -1,25 +1,64 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Registrar Pago para Turno #{{ turno.id }}</h2>
+<div class="page-header">
+    <h2><i class="fas fa-money-bill-wave" style="color: var(--success-color);"></i> Registrar Pago para Turno #{{ turno.id }}</h2>
+</div>
 
 <div class="form-container">
-    <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+    <div style="background: var(--card-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
         <p><strong>Cliente:</strong> {{ turno.nombre }} {{ turno.apellido }}</p>
         <p><strong>Vehículo:</strong> {{ turno.patente }}</p>
         <p><strong>Servicio:</strong> {{ turno.servicio_nombre }}</p>
-        <p><strong>Monto Total a Pagar:</strong> <span style="font-size: 1.2rem; font-weight: bold; color: var(--success-color);">${{ turno.precio }}</span></p>
     </div>
 
     <form method="POST">
-        <div class="form-group">
-            <label for="monto_abonado">Monto Abonado *</label>
-            <input type="number" step="0.01" id="monto_abonado" name="monto_abonado" value="{{ turno.precio }}" required>
+        <!-- SECCIÓN SUBTOTAL -->
+        <div class="form-group" style="text-align: center; margin-bottom: 20px;">
+            <label style="color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem;">Subtotal</label>
+            <div style="font-size: 1.5rem; font-weight: bold; color: var(--text-main);">
+                $<span id="subtotal_display">{{ turno.precio }}</span>
+            </div>
+            <!-- Campo oculto del subtotal si hiciera falta, aunque lo toma del turno.precio en el server -->
         </div>
-        
+
+        <!-- SECCIÓN AJUSTE DE PRECIO -->
+        <div class="form-group" style="background: var(--bg-color); padding: 15px; border-radius: 8px; border: 1px dashed var(--border-color);">
+            <label style="font-weight: 600; color: var(--text-main); margin-bottom: 10px;"><i class="fas fa-tags"></i> Ajuste de Precio</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <select id="tipo_ajuste" name="tipo_ajuste" class="form-control" style="flex: 1;">
+                    <option value="">Ninguno</option>
+                    <option value="descuento">Descuento</option>
+                    <option value="aumento">Aumento</option>
+                </select>
+                
+                <input type="number" step="0.1" min="0" id="porcentaje_ajuste" name="porcentaje_ajuste" class="form-control" style="flex: 1; display: none;" list="porcentajes_list" placeholder="%">
+                <datalist id="porcentajes_list">
+                    <option value="1">
+                    <option value="2">
+                    <option value="3">
+                    <option value="5">
+                    <option value="10">
+                    <option value="15">
+                    <option value="20">
+                </datalist>
+            </div>
+            <div id="ajuste_display" style="display: none; font-weight: bold; text-align: right; padding-right: 10px;"></div>
+        </div>
+
+        <!-- SECCIÓN TOTAL -->
+        <div class="form-group" style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(34, 197, 94, 0.1); border-radius: 8px;">
+            <label style="color: var(--success-color); text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">Total Final</label>
+            <div style="font-size: 2rem; font-weight: bold; color: var(--success-color);">
+                $<span id="total_final_display">{{ turno.precio }}</span>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 25px 0;">
+
         <div class="form-group">
             <label for="metodo_pago">Método de Pago *</label>
-            <select id="metodo_pago" name="metodo_pago" required>
+            <select id="metodo_pago" name="metodo_pago" class="form-control" required>
                 <option value="Efectivo">Efectivo</option>
                 <option value="Transferencia">Transferencia</option>
                 <option value="Tarjeta">Tarjeta</option>
@@ -27,8 +66,72 @@
             </select>
         </div>
         
-        <button type="submit" class="btn btn-success">Confirmar Pago</button>
-        <a href="{{ url_for('turnos') }}" class="btn btn-secondary">Cancelar</a>
+        <div class="form-group">
+            <label for="monto_abonado">Monto que entrega el cliente *</label>
+            <input type="number" step="0.01" id="monto_abonado" name="monto_abonado" class="form-control" value="{{ turno.precio }}" required>
+            <small style="color: var(--text-muted);">Si paga todo, deje el monto que coincide con el total. Si paga una seña, ingrese el monto entregado.</small>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="btn btn-success" style="flex: 1;"><i class="fas fa-check-circle"></i> Confirmar Pago</button>
+            <a href="{{ url_for('turnos') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
     </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const subtotal = parseFloat('{{ turno.precio }}');
+    
+    const tipoAjusteSelect = document.getElementById('tipo_ajuste');
+    const porcentajeSelect = document.getElementById('porcentaje_ajuste');
+    
+    const ajusteDisplay = document.getElementById('ajuste_display');
+    const totalFinalDisplay = document.getElementById('total_final_display');
+    const inputMontoAbonado = document.getElementById('monto_abonado');
+
+    function calcularTotal() {
+        const tipo = tipoAjusteSelect.value;
+        const porcentaje = parseFloat(porcentajeSelect.value);
+        let montoAjuste = 0;
+        let totalFinal = subtotal;
+
+        if (tipo === 'descuento') {
+            montoAjuste = subtotal * (porcentaje / 100);
+            totalFinal = subtotal - montoAjuste;
+            ajusteDisplay.style.display = 'block';
+            ajusteDisplay.style.color = 'var(--danger-color)'; // Rojo para descuento (o verde, según diseño, lo pondré rojo por restar)
+            ajusteDisplay.innerText = `Descuento aplicado (${porcentaje}%): -$${montoAjuste.toFixed(2)}`;
+        } else if (tipo === 'aumento') {
+            montoAjuste = subtotal * (porcentaje / 100);
+            totalFinal = subtotal + montoAjuste;
+            ajusteDisplay.style.display = 'block';
+            ajusteDisplay.style.color = '#eab308'; // Amarillo/naranja para aumento
+            ajusteDisplay.innerText = `Aumento aplicado (${porcentaje}%): +$${montoAjuste.toFixed(2)}`;
+        } else {
+            ajusteDisplay.style.display = 'none';
+        }
+
+        totalFinalDisplay.innerText = totalFinal.toFixed(2);
+        
+        // Actualizar por comodidad el monto que entrega el cliente para que coincida con el nuevo total
+        inputMontoAbonado.value = totalFinal.toFixed(2);
+    }
+
+    tipoAjusteSelect.addEventListener('change', function() {
+        if (this.value === '') {
+            porcentajeSelect.style.display = 'none';
+            porcentajeSelect.value = ""; 
+        } else {
+            porcentajeSelect.style.display = 'block';
+            if(porcentajeSelect.value === "") {
+                porcentajeSelect.value = "10"; // Default
+            }
+        }
+        calcularTotal();
+    });
+
+    porcentajeSelect.addEventListener('input', calcularTotal);
+});
+</script>
 {% endblock %}

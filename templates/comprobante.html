@@ -38,7 +38,19 @@
         </div>
         
         <div class="amount-box">
-            <p>Monto Total: ${{ pago.monto_total }}</p>
+            {% if pago.tipo_ajuste %}
+                <p>Subtotal: ${{ pago.subtotal }}</p>
+                {% if pago.tipo_ajuste == 'descuento' %}
+                    <p style="color: red;">Descuento ({{ pago.porcentaje_ajuste }}%): -${{ pago.monto_ajuste }}</p>
+                {% elif pago.tipo_ajuste == 'aumento' %}
+                    <p style="color: orange;">Aumento ({{ pago.porcentaje_ajuste }}%): +${{ pago.monto_ajuste }}</p>
+                {% endif %}
+                <hr>
+                <p><strong>Monto Total (con ajuste): ${{ pago.monto_total }}</strong></p>
+            {% else %}
+                <p>Monto Total: ${{ pago.monto_total }}</p>
+            {% endif %}
+            
             <p>Monto Abonado: ${{ pago.monto_abonado }}</p>
             <p>Saldo Pendiente: ${{ pago.saldo_pendiente }}</p>
             <hr>

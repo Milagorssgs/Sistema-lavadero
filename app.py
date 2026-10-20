@@ -326,6 +326,38 @@ def servicio_nuevo():
         
     return render_template('servicio_form.html', servicio=None)
 
+@app.route('/servicio/<int:id>/editar', methods=['GET', 'POST'])
+@login_required
+def servicio_editar(id):
+    conn = get_db()
+    servicio = conn.execute('SELECT * FROM servicios WHERE id = ?', (id,)).fetchone()
+    
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        descripcion = request.form['descripcion']
+        precio = request.form['precio']
+        duracion = request.form['duracion']
+        
+        conn.execute('UPDATE servicios SET nombre=?, descripcion=?, precio=?, duracion=? WHERE id=?',
+                     (nombre, descripcion, precio, duracion, id))
+        conn.commit()
+        conn.close()
+        flash('Servicio actualizado correctamente.', 'success')
+        return redirect(url_for('servicios'))
+        
+    conn.close()
+    return render_template('servicio_form.html', servicio=servicio)
+
+@app.route('/servicio/<int:id>/eliminar')
+@login_required
+def servicio_eliminar(id):
+    conn = get_db()
+    conn.execute('DELETE FROM servicios WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    flash('Servicio eliminado correctamente.', 'success')
+    return redirect(url_for('servicios'))
+
 # ----- MÓDULO TURNOS / AGENDA -----
 @app.route('/turnos')
 @login_required
@@ -421,14 +453,43 @@ def pago_nuevo(turno_id):
         monto_abonado = float(request.form['monto_abonado'])
         metodo_pago = request.form['metodo_pago']
         
-        monto_total = turno['precio']
+        subtotal = turno['precio']
+        tipo_ajuste = request.form.get('tipo_ajuste')
+        
+        try:
+            porcentaje_ajuste = float(request.form.get('porcentaje_ajuste') or 0)
+        except ValueError:
+            porcentaje_ajuste = 0
+            
+        monto_ajuste = 0
+        monto_total = subtotal
+
+        if tipo_ajuste == 'descuento':
+            if porcentaje_ajuste > 100:
+                flash('El descuento no puede superar el 100%.', 'danger')
+                return redirect(url_for('pago_nuevo', turno_id=turno_id))
+            if porcentaje_ajuste < 0:
+                flash('El descuento no puede ser negativo.', 'danger')
+                return redirect(url_for('pago_nuevo', turno_id=turno_id))
+            monto_ajuste = subtotal * (porcentaje_ajuste / 100)
+            monto_total = subtotal - monto_ajuste
+        elif tipo_ajuste == 'aumento':
+            if porcentaje_ajuste < 0:
+                flash('El aumento no puede ser negativo.', 'danger')
+                return redirect(url_for('pago_nuevo', turno_id=turno_id))
+            monto_ajuste = subtotal * (porcentaje_ajuste / 100)
+            monto_total = subtotal + monto_ajuste
+        else:
+            tipo_ajuste = None
+            porcentaje_ajuste = 0
+            
         saldo_pendiente = monto_total - monto_abonado
         estado = 'Pagado' if saldo_pendiente <= 0 else 'Pago parcial'
         
         conn.execute('''
-            INSERT INTO pagos (turno_id, monto_total, monto_abonado, saldo_pendiente, metodo_pago, estado)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (turno_id, monto_total, monto_abonado, saldo_pendiente, metodo_pago, estado))
+            INSERT INTO pagos (turno_id, monto_total, monto_abonado, saldo_pendiente, metodo_pago, estado, subtotal, tipo_ajuste, porcentaje_ajuste, monto_ajuste)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (turno_id, monto_total, monto_abonado, saldo_pendiente, metodo_pago, estado, subtotal, tipo_ajuste, porcentaje_ajuste, monto_ajuste))
         
         # Opcional: Actualizar estado del turno
         if estado == 'Pagado':
@@ -497,6 +558,27 @@ def usuarios():
     usuarios = conn.execute('SELECT id, username, rol, activo FROM usuarios').fetchall()
     conn.close()
     return render_template('usuarios.html', usuarios=usuarios)
+
+@app.route('/usuario/nuevo', methods=['GET', 'POST'])
+@admin_required
+def usuario_nuevo():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = generate_password_hash(request.form['password'])
+        rol = request.form['rol']
+        
+        conn = get_db()
+        try:
+            conn.execute('INSERT INTO usuarios (username, password, rol, activo) VALUES (?, ?, ?, 1)', (username, password, rol))
+            conn.commit()
+            flash('Usuario creado exitosamente.', 'success')
+            return redirect(url_for('usuarios'))
+        except sqlite3.IntegrityError:
+            flash('El nombre de usuario ya existe.', 'danger')
+        finally:
+            conn.close()
+            
+    return render_template('usuario_form.html', usuario=None)
 
 # ----- RESERVA ONLINE PÚBLICA -----
 @app.route('/reserva_online', methods=['GET', 'POST'])

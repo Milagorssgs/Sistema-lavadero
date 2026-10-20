@@ -30,7 +30,14 @@
                     <div style="font-weight: 500;">{{ p.nombre }} {{ p.apellido }}</div>
                 </td>
                 <td>
-                    <div>Total: <span style="font-weight: 600;">${{ p.monto_total }}</span></div>
+                    <div>
+                        Total: <span style="font-weight: 600;">${{ p.monto_total }}</span>
+                        {% if p.tipo_ajuste %}
+                            <small title="{{ p.tipo_ajuste|capitalize }} del {{ p.porcentaje_ajuste }}%" style="color: {% if p.tipo_ajuste == 'descuento' %}var(--danger-color){% else %}#eab308{% endif %}; font-weight: bold; cursor: help;">
+                                {% if p.tipo_ajuste == 'descuento' %}<i class="fas fa-arrow-down"></i>{% else %}<i class="fas fa-arrow-up"></i>{% endif %}
+                            </small>
+                        {% endif %}
+                    </div>
                     <div>Abonado: <span style="color: var(--success-color); font-weight: 600;">${{ p.monto_abonado }}</span></div>
                     {% if p.saldo_pendiente > 0 %}
                     <div>Saldo: <span style="color: var(--danger-color); font-weight: 600;">${{ p.saldo_pendiente }}</span></div>
